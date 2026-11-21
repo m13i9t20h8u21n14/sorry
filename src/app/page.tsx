@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BackgroundDecorations } from "@/components/BackgroundDecorations";
 import { CustomCursor } from "@/components/CustomCursor";
 import { ApologyCard } from "@/components/ApologyCard";
+import { IntroEnvelope } from "@/components/IntroEnvelope";
 import { YouTubeBackgroundMusic, YouTubePlayerRef } from "@/components/YouTubeBackgroundMusic";
 
 // Lazy-load CelebrationPage only when celebration stage is reached
@@ -25,12 +26,17 @@ const CelebrationPage = dynamic(
 );
 
 export default function Home() {
-  // Apology card rendered immediately on initial visit with 0 waiting time
-  const [currentPage, setCurrentPage] = useState<"apology" | "celebration">("apology");
+  // Always start on the welcome screen with the sealed envelope on fresh load or refresh
+  const [currentPage, setCurrentPage] = useState<"welcome" | "apology" | "celebration">("welcome");
   const musicRef = useRef<YouTubePlayerRef>(null);
 
+  const handleOpenEnvelope = () => {
+    // Start background music only after Lisha explicitly clicks to open her letter
+    musicRef.current?.play();
+    setCurrentPage("apology");
+  };
+
   const handleForgive = () => {
-    // Optionally start music if not already playing upon forgiveness
     musicRef.current?.play();
     setCurrentPage("celebration");
   };
@@ -68,6 +74,19 @@ export default function Home() {
       {/* Main Interactive Stage with AnimatePresence */}
       <main className="relative z-20 flex-1 flex items-center justify-center py-4 sm:py-8">
         <AnimatePresence mode="wait">
+          {currentPage === "welcome" && (
+            <motion.div
+              key="welcome"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4 }}
+              className="w-full flex items-center justify-center"
+            >
+              <IntroEnvelope onOpen={handleOpenEnvelope} />
+            </motion.div>
+          )}
+
           {currentPage === "apology" && (
             <motion.div
               key="apology"

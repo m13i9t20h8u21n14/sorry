@@ -104,10 +104,10 @@ export const IntroEnvelope: React.FC<IntroEnvelopeProps> = ({ onOpen }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleOpen}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/80 hover:bg-white text-rose-800 text-sm font-medium border border-pink-200 shadow-sm backdrop-blur-sm transition-all"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white/80 hover:bg-white text-rose-800 text-sm font-medium border border-pink-200 shadow-sm backdrop-blur-sm transition-all cursor-pointer"
           >
             <span className="text-base">💛</span>
-            <span>Open My Apology Letter 💌</span>
+            <span>Open your letter 💌</span>
           </motion.button>
           <p className="text-xs text-rose-400 font-serif italic">
             &ldquo;From the bottom of my heart, I am truly sorry, Lisha.&rdquo;
