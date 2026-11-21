@@ -3,25 +3,142 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fff8f9;
+  --foreground: #4a2839;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-poppins), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, #fff5f7 0%, #fef0f5 35%, #f6effc 70%, #fff9f5 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+::selection {
+  background: #fde68a;
+  color: #78350f;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #fff0f5;
+}
+::-webkit-scrollbar-thumb {
+  background: #fcd34d;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f59e0b;
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 15px 35px -5px rgba(245, 158, 11, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 248, 245, 0.78) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 25px 60px -15px rgba(244, 114, 182, 0.18), 0 10px 20px -5px rgba(251, 191, 36, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.glass-button {
+  background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+  box-shadow: 0 8px 24px -4px rgba(255, 117, 140, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+.glass-button:hover {
+  box-shadow: 0 12px 30px -2px rgba(255, 117, 140, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Pure CSS Keyframe animations for background floating hearts & sparkles */
+@keyframes float-heart-css {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: var(--target-opacity, 0.45);
+  }
+  85% {
+    opacity: var(--target-opacity, 0.45);
+  }
+  100% {
+    transform: translateY(-115vh) translateX(var(--drift-x, 25px)) rotate(var(--rot, 15deg));
+    opacity: 0;
+  }
+}
+
+@keyframes twinkle-css {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.65) rotate(0deg);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.15) rotate(90deg);
+  }
+}
+
+.bg-floating-heart {
+  will-change: transform, opacity;
+  animation-name: float-heart-css;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.bg-twinkle-sparkle {
+  will-change: transform, opacity;
+  animation-name: twinkle-css;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+/* Respect user's reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bg-floating-heart,
+  .bg-twinkle-sparkle {
+    animation: none !important;
+    display: none !important;
+  }
+}
+
+/* Custom interactive cursor support */
+@media (pointer: fine) {
+  body.custom-cursor-active {
+    cursor: none !important;
+  }
+  body.custom-cursor-active a,
+  body.custom-cursor-active button,
+  body.custom-cursor-active input,
+  body.custom-cursor-active select {
+    cursor: none !important;
   }
 }

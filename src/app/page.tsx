@@ -1,100 +1,107 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useRef } from "react";
+import dynamic from "next/dynamic";
+import { motion, AnimatePresence } from "framer-motion";
+import { BackgroundDecorations } from "@/components/BackgroundDecorations";
+import { CustomCursor } from "@/components/CustomCursor";
+import { ApologyCard } from "@/components/ApologyCard";
+import { YouTubeBackgroundMusic, YouTubePlayerRef } from "@/components/YouTubeBackgroundMusic";
+
+// Lazy-load CelebrationPage only when celebration stage is reached
+const CelebrationPage = dynamic(
+  () => import("@/components/CelebrationPage").then((mod) => mod.CelebrationPage),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center min-h-[50vh] text-center p-6">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 text-amber-800 text-sm font-medium animate-pulse">
+          <span>💛</span>
+          <span>Unlocking celebration...</span>
+        </div>
+      </div>
+    ),
+  }
+);
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  // Apology card rendered immediately on initial visit with 0 waiting time
+  const [currentPage, setCurrentPage] = useState<"apology" | "celebration">("apology");
+  const musicRef = useRef<YouTubePlayerRef>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleForgive = () => {
+    // Optionally start music if not already playing upon forgiveness
+    musicRef.current?.play();
+    setCurrentPage("celebration");
+  };
+
+  return (
+    <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden">
+      {/* Custom animated cursor with heart trail on desktop */}
+      <CustomCursor />
+
+      {/* Lightweight GPU-accelerated CSS floating hearts & sparkles background */}
+      <BackgroundDecorations />
+
+      {/* Lazy-loaded YouTube Background Music Controller (Bottom-Right Floating Disc) */}
+      <YouTubeBackgroundMusic ref={musicRef} />
+
+      {/* Top Floating Navigation Bar */}
+      <header className="relative z-30 w-full px-4 sm:px-8 pt-5 pb-2 flex items-center justify-between max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, x: -15 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 backdrop-blur-md border border-white/80 shadow-sm text-xs sm:text-sm font-serif font-medium text-rose-900"
+        >
+          <span className="text-base">💛</span>
+          <span className="font-semibold tracking-wide">A Little Sorry, Lisha</span>
+          <span className="text-[10px] text-amber-500 uppercase tracking-widest hidden sm:inline ml-1">
+            • with sincerity
+          </span>
+        </motion.div>
+
+        <div className="text-xs text-rose-500/70 font-medium hidden sm:flex items-center gap-1.5 bg-white/50 backdrop-blur-sm px-3 py-1 rounded-full border border-pink-100">
+          <span>🎵 Background song ready in bottom-right</span>
         </div>
+      </header>
+
+      {/* Main Interactive Stage with AnimatePresence */}
+      <main className="relative z-20 flex-1 flex items-center justify-center py-4 sm:py-8">
+        <AnimatePresence mode="wait">
+          {currentPage === "apology" && (
+            <motion.div
+              key="apology"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.04, filter: "blur(6px)" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="w-full flex items-center justify-center"
+            >
+              <ApologyCard onForgive={handleForgive} />
+            </motion.div>
+          )}
+
+          {currentPage === "celebration" && (
+            <motion.div
+              key="celebration"
+              initial={{ opacity: 0, scale: 0.92 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.45, ease: "easeOut" }}
+              className="w-full"
+            >
+              <CelebrationPage
+                onBackToApology={() => setCurrentPage("apology")}
+                instagramUrl="https://www.instagram.com/achilles.mtp/?hl=en"
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer Note */}
+      <footer className="relative z-20 w-full py-4 text-center text-xs text-rose-800/80 font-medium select-none px-4">
+        <p>Made with a little effort, a lot of debugging, and a genuine apology. 💛</p>
       </footer>
     </div>
   );
